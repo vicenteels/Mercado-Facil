@@ -3,6 +3,8 @@
     "name": "Mercado-Facil",
     "slug": "Mercado-Facil",
     "version": "1.0.0",
+    "scheme": "mercado-facil",
+    "plugins": ["expo-router"],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",

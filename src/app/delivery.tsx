@@ -1,0 +1,16 @@
+import React from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { router, useLocalSearchParams } from 'expo-router';
+import { Header, PrimaryButton, SectionRow } from '../components/UI';
+import { useShop } from '../context/ShopContext';
+import { colors } from '../theme';
+import { formatAddress } from '../types/shop';
+
+export default function DeliveryScreen() {
+  const { fromReview } = useLocalSearchParams<{ fromReview?: string }>();
+  const { delivery, setDelivery, address, count } = useShop();
+  return <View style={{ flex: 1 }}><Header title="Entrega ou retirada" back /><ScrollView contentContainerStyle={s.content}><Text style={s.heading}>Como você quer receber?</Text><View style={s.choices}><Choice icon="car-outline" label="Entrega" selected={delivery === 'Entrega'} onPress={() => setDelivery('Entrega')} /><Choice icon="storefront-outline" label="Retirada" selected={delivery === 'Retirada'} onPress={() => setDelivery('Retirada')} /></View>{delivery === 'Entrega' ? <><Text style={s.sectionTitle}>Endereço de entrega</Text><SectionRow icon="location-outline" text={formatAddress(address)} onPress={() => router.push('/address')} /><Pressable onPress={() => router.push('/address')} style={s.edit} accessibilityRole="button"><Text style={s.editText}>Alterar endereço</Text></Pressable></> : <><Text style={s.sectionTitle}>Local de retirada</Text><SectionRow icon="storefront-outline" text="Loja Mercado Fácil - Centro" /></>}<Text style={s.sectionTitle}>Previsão</Text><SectionRow icon="time-outline" text={delivery === 'Entrega' ? 'Hoje, 18:00 - 19:00' : 'Hoje, após 18:00'} /></ScrollView><View style={s.footer}><PrimaryButton label={fromReview ? 'Voltar à revisão' : 'Continuar para pagamento'} disabled={!count} onPress={() => { if (fromReview) { if (router.canGoBack()) router.back(); } else router.push('/payment'); }} /></View></View>;
+}
+function Choice({ icon, label, selected, onPress }: { icon: React.ComponentProps<typeof Ionicons>['name']; label: string; selected: boolean; onPress: () => void }) { return <Pressable onPress={onPress} style={[s.choice, selected && s.selected]} accessibilityRole="radio" accessibilityState={{ selected }}><Ionicons name={icon} size={26} color={selected ? colors.darkGreen : colors.muted} /><Text style={[s.choiceText, selected && { color: colors.darkGreen, fontWeight: '700' }]}>{label}</Text></Pressable>; }
+const s = StyleSheet.create({ content: { padding: 17, paddingBottom: 25 }, heading: { color: colors.darkGreen, fontSize: 22, fontWeight: '700', marginBottom: 16 }, choices: { flexDirection: 'row', gap: 10 }, choice: { flex: 1, minHeight: 90, borderWidth: 1, borderColor: colors.border, borderRadius: 14, justifyContent: 'center', alignItems: 'center', gap: 7 }, selected: { borderColor: colors.green, backgroundColor: colors.paleGreen }, choiceText: { fontSize: 17, color: colors.text }, sectionTitle: { color: colors.darkGreen, fontSize: 18, fontWeight: '700', marginTop: 25, marginBottom: 10 }, edit: { alignSelf: 'flex-end', minHeight: 44, justifyContent: 'center', paddingHorizontal: 4 }, editText: { color: colors.green, fontSize: 15, fontWeight: '700' }, footer: { borderTopWidth: 1, borderTopColor: colors.border, padding: 12 } });
